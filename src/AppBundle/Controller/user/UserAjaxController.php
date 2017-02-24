@@ -529,6 +529,10 @@ class UserAjaxController extends BaseController
 
         $user = $this->getUser();
         $moduleId = $request->get('moduleId');
+        $aSearch = $request->get("search");
+	    array_shift($aSearch);
+	    array_shift($aSearch);
+
 
         /** @var EntityManager $em */
         $em = $this->getEM();
@@ -565,17 +569,93 @@ class UserAjaxController extends BaseController
         $qb = $modDataRespo->createQueryBuilder('d');
 
         $no = $request->get('order_customer_id');
+	    $bIsSearch = false;
         if (isset($no) && $no) {
+        	$bIsSearch = true;
             $no = intval($no);
-            $qb->where($qb->expr()->eq('d.clientId', $no));
+            $qb->where($qb->expr()->eq('d.clientId', $no))
+	            ->andwhere($qb->expr()->eq('d.moduleId', $moduleId));
 
         } else {
 	        $qb->where($qb->expr()->eq('d.moduleId', $moduleId));
         }
-        $modeDatas = $qb->getQuery()
-            ->setFirstResult($iDisplayStart)
-            ->setMaxResults($end - $iDisplayStart)
-            ->getResult();
+
+	    $modeDatas = $qb->getQuery()
+		    ->setFirstResult($iDisplayStart)
+		    ->setMaxResults($end - $iDisplayStart)
+		    ->getResult();
+
+
+
+
+	    //搜索功能
+	    $aTmp = array();
+
+	    $clientIds = array();
+	    /** @var SubDataRespository $subDataRespos */
+	    $subDataRespos = $em->getRepository('AppBundle:SubData');
+	    /** @var QueryBuilder $qb */
+	    $qb = $subDataRespos->createQueryBuilder("s");
+
+	    if (count($aSearch) && $bIsSearch == false) {
+
+
+		    foreach ($aSearch as $k => $v) {
+
+		    	if ($v) {
+				    $tmpClientIds = $qb->select("s.clientId")
+					    ->Where($qb->expr()->eq("s.fieldName", "'".$k."'"))
+					    ->andWhere($qb->expr()->like("s.value", $qb->expr()->literal('%' . $v . '%')))
+					    ->getQuery()
+					    ->getResult();
+
+				    $sClients = '';
+				    if ($tmpClientIds) {
+					    foreach ($tmpClientIds as $v) {
+							$sClients .= $v["clientId"].",";
+					    }
+					    $sClients = substr($sClients, 0, -1);
+				    }
+
+			    }
+
+
+		    }
+		    if (strlen($sClients)) {
+			    /** @var ModDataRespository $departmentRespo */
+			    $modDataRespo = $em->getRepository('AppBundle:ModData');
+			    /** @var QueryBuilder $qb */
+			    $qb = $modDataRespo->createQueryBuilder('d');
+
+
+			    $modeDatas = $qb->where($qb->expr()->eq('d.moduleId', $moduleId))
+				    ->andWhere($qb->expr()->in("d.clientId",$sClients))
+				    ->getQuery()
+				    ->getResult();
+
+		    }
+
+
+
+
+
+	    }
+
+
+
+
+	    //搜索功能 end
+
+
+
+
+
+
+
+
+
+
+
 
         /**
          * @var  $k
@@ -728,7 +808,7 @@ class UserAjaxController extends BaseController
 
                 }
             }
-            $recordsArr[] = '<a href="/modules/detailData?moduleId='.$moduleId.'&clientId=' . $modeData->getClientId() . '" class=""> 查看 </a>|' . '<a href="/modules/addData?moduleId='.$moduleId.'&clientId=' . $modeData->getClientId() . '" class=""> 修改</a>|<a href="/modules/deleteData?moduleId='.$moduleId.'&clientId=' . $modeData->getClientId() . '" class=""> 删除</a>';
+            $recordsArr[] = json_encode($clientIds).'<a href="/modules/detailData?moduleId='.$moduleId.'&clientId=' . $modeData->getClientId() . '" class=""> 查看 </a>|' . '<a href="/modules/addData?moduleId='.$moduleId.'&clientId=' . $modeData->getClientId() . '" class=""> 修改</a>|<a href="/modules/deleteData?moduleId='.$moduleId.'&clientId=' . $modeData->getClientId() . '" class=""> 删除</a>';
 
             //array_shift($recordsArr);
 

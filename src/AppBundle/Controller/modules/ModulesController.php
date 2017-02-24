@@ -127,7 +127,7 @@ class ModulesController extends BaseController
             $fieldGroup[$key] = $value;
         }
 
-        if (count($fieldGroup) < 4) {
+        if (count($fieldGroup) < 4) {//不够4个补空
             for ($i = 0; $i < (4 - count($fieldGroup)); $i++) {
                 $f = new Field();
                 $fieldGroup[] = $f;

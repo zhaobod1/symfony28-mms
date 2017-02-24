@@ -1,0 +1,63 @@
+user:
+    userId
+    username
+    avatar
+    password
+    age
+    brief
+    departmentId
+    createdAt
+    updateAt
+
+authority:
+    authorId
+    userId
+    modId
+    dataAuthor
+    modAuthor
+
+department:
+    departmentId
+    name
+    minister(userId)
+    createdAt
+    updateAt
+
+
+module:
+    moduleId
+    name
+    avatar
+
+field:
+    id
+    moduleId
+    fieldID
+    fieldName
+    type
+    value
+    required
+
+
+modData:
+    clientId    #数据索引
+    moduleId    #模块ID
+    creatAt
+    updateAt
+
+subData:
+    subId
+    clientId #数据索引
+    fieldName
+    value
+
+
+globalSet:
+    id
+    name
+    value
+
+
+
+#权限设置
+# 列表权限4, 写权限2, 删除权限1

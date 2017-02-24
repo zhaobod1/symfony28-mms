@@ -3,7 +3,7 @@
 *.sql
 ### Symfony template
 # huo15 design
-huo15Design/
+#huo15Design/
 # Cache and logs (Symfony2)
 /app/cache/*
 /app/logs/*
