@@ -1,0 +1,47 @@
+<?php
+/**
+ * Created by 火一五信息科技有限公司.
+ * Tel :15288986891
+ * QQ  :3186355915
+ * web :http://host.huo15.com
+ * User: apple
+ * Date: 16/8/24
+ * Time: 下午10:09
+ */
+
+namespace AppBundle\Entity;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * Class Data
+ * @package AppBundle\Entity
+ * @ORM\Entity(repositoryClass="DataRespository")
+ * @ORM\Table(name="data")
+ */
+class Data
+{
+    /**
+     * @ORM\Id //主键
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO") //自动增加
+     */
+    protected $clientId;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $moduleId;
+
+    /**
+     * @ORM\Column(type="time")
+     */
+    protected $createAt;
+
+    /**
+     * @ORM\Column(type="time")
+     */
+    protected $updateAt;
+
+
+}

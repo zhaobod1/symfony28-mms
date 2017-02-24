@@ -1,0 +1,213 @@
+{% extends 'user_base.html.twig' %}
+
+
+
+{% block h_pageLevelPlugins %}
+    <link href="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/global/plugins/morris/morris.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/global/plugins/fullcalendar/fullcalendar.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/global/plugins/jqvmap/jqvmap/jqvmap.css') }}" rel="stylesheet" type="text/css"/>
+
+{% endblock %}
+
+{% block h_themeLayoutStyles %}
+    <link href="{{ asset('assets/layouts/layout/css/layout.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/layouts/layout/css/themes/darkblue.min.css') }}" rel="stylesheet" type="text/css"
+          id="style_color"/>
+    <link href="{{ asset('assets/layouts/layout/css/custom.min.css') }}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+
+{% block header %}
+    {{ parent() }}
+{% endblock %}
+{% block sideBar %}
+    {{ parent() }}
+{% endblock %}
+{% block pageBar %}
+    <div class="page-bar">
+        <ul class="page-breadcrumb">
+            <li>
+                <a href="index.html">主页</a>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <a href="#">模块管理</a>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <span>模块列表</span>
+            </li>
+        </ul>
+        <div class="page-toolbar">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn green btn-sm btn-outline dropdown-toggle"
+                        data-toggle="dropdown"> 快捷菜单
+                    <i class="fa fa-angle-down"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <li>
+                        <a href="#">
+                            <i class="icon-bell"></i> 公告</a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="icon-shield"></i> 规则</a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="icon-user"></i> 个人中心</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#">
+                            <i class="icon-bag"></i> 计划任务</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block pageTitle %}
+    <div class="note note-info">
+        <p>
+            请谨慎删除模块. 如果模块内部有数据,系统将禁止删除模块.
+        </p>
+    </div>
+{% endblock %}
+
+{% block pageContent %}
+    <div class="row">
+        <div class="portlet light portlet-fit bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <div class="col-md-4">
+                        <div class="btn-group">
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <a href="{{ routes.modules_add }}">
+                                <button id="huo15_editable_add_mod" class="btn green">添加新模块
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="btn-group">
+                        <a class="btn red btn-outline btn-circle btn-sm" href="javascript:;" data-toggle="dropdown"
+                           data-hover="dropdown" data-close-others="true" aria-expanded="false"> 快捷操作
+                            <i class="fa fa-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li>
+                                <a href="javascript:;"> 添加模块</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="javascript:;">个人中心</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;">会员列表</a>
+                            </li>
+                            <li>
+                                <a href="javascript:;">部门列表</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="row">
+
+                    {% for key, module in modules %}
+                    <div class="col-md-4">
+                        <div class="mt-widget-3">
+                            <div class="mt-head bg-{% if key%4 == 0 %}blue-hoki{% elseif key%4 == 1 %}red{% elseif key%4 == 2 %}green{% elseif key%4 == 3 %}purple{% endif %}">
+                                <div class="mt-head-icon">
+                                    <img src="{{ module.avatar|url_decode }}" alt="" width="120" height="120" class="img-circle">
+                                </div>
+                                <div class="mt-head-desc"> {{ module.brief }}</div>
+                                <span class="mt-head-date"> {{ module.name }} </span>
+                                <div class="mt-head-button">
+                                    <a href="{{ path('app_modules_modules_adddata') }}?moduleId={{ module.id }}">
+                                        <button type="button" class="btn btn-circle btn-outline white btn-sm">添加数据
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mt-body-actions-icons">
+                                <div class="btn-group btn-group btn-group-justified">
+                                    <a href="{{ routes.modules_data_list }}?moduleId={{ module.id }}" class="btn ">
+                                                                <span class="mt-icon">
+                                                                    <i class="glyphicon glyphicon-align-justify"></i>
+                                                                </span>列表 </a>
+                                    <a href="{{ routes.modules_list_add_data }}?moduleId={{ module.id }}" class="btn ">
+                                                                <span class="mt-icon">
+                                                                    <i class="glyphicon glyphicon-plus"></i>
+                                                                </span>添加 </a>
+                                    <a href="{{ routes.modules_add }}?moduleId={{ module.id }}" class="btn ">
+                                                                <span class="mt-icon">
+                                                                    <i class="glyphicon glyphicon-pencil"></i>
+                                                                </span>修改 </a>
+                                    <a href="#" class="btn deleteMod" data-id="{{ module.id }}">
+                                                                <span class="mt-icon">
+                                                                    <i class="glyphicon glyphicon-remove"></i>
+                                                                </span>删除 </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block footer %}
+    {{ parent() }}
+{% endblock %}
+{# 底部js和css加载 #}
+{% block pageLevelPlugins %}
+
+{% endblock %}
+
+
+
+
+
+{% block pageLevelScripts %}
+{% endblock %}
+
+
+
+
+{% block themeLayoutScript %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block huo15fix %}
+    <script>
+        $(function() {
+            $('.deleteMod').each(function(index, element) {
+                $(element).click(function (e) {
+                    e.preventDefault();
+                    var moduleId = parseInt($(element).attr('data-id'));
+                    deleteMod(moduleId);
+                });
+            });
+        });
+        function deleteMod(id) {
+            if (confirm('确定要删除吗')) {
+                window.location.href = '{{ path('deleteMod') }}?moduleId=' + id;
+            }
+        }
+    </script>
+{% endblock %}
